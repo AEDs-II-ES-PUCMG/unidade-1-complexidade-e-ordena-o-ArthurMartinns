@@ -1,13 +1,10 @@
-import java.util.Arrays;
-
-public class BubbleSort<T extends Comparable<T>> implements IOrdenador<T>{
-
+public class SelectionSort<T extends Comparable<T>> implements IOrdenador<T> {
     private long comparacoes;
     private long movimentacoes;
     private double tempoOrdenacao;
     private double inicio;
 
-    private double nanoToMilli = 1.0/1_000_000;
+    private double nanoToMilli = 1.0 / 1_000_000;
 
     @Override
     public long getComparacoes() {
@@ -43,18 +40,8 @@ public class BubbleSort<T extends Comparable<T>> implements IOrdenador<T>{
 
     @Override
     public T[] ordenar(T[] dados) {
-        T[] dadosOrdenados = Arrays.copyOf(dados, dados.length);
-        int tamanho = dadosOrdenados.length;
-        iniciar();
-        for (int i = tamanho - 1; i > 0; i--) {
-            for (int j = 0; j < i; j++) {
-                comparacoes++;
-                if ((dadosOrdenados[j].compareTo(dadosOrdenados[j+1]) > 0))
-                swap (j, j + 1, dadosOrdenados);
-            }
-        }	
-        terminar();
-        return dadosOrdenados;
+
+        throw new UnsupportedOperationException("Unimplemented method 'ordenar'");
     }
 
 }
