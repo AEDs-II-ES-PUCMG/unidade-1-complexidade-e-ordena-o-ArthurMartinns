@@ -40,8 +40,27 @@ public class SelectionSort<T extends Comparable<T>> implements IOrdenador<T> {
 
     @Override
     public T[] ordenar(T[] dados) {
-
-        throw new UnsupportedOperationException("Unimplemented method 'ordenar'");
+        T[] dadosOrdenados = java.util.Arrays.copyOf(dados, dados.length);
+        int tamanho = dadosOrdenados.length;
+        iniciar();
+        
+        for (int i = 0; i < tamanho - 1; i++) {
+            int menorIndice = i;
+            
+            for (int j = i + 1; j < tamanho; j++) {
+                comparacoes++;
+                if (dadosOrdenados[j].compareTo(dadosOrdenados[menorIndice]) < 0) {
+                    menorIndice = j;
+                }
+            }
+            
+            if (menorIndice != i) {
+                swap(i, menorIndice, dadosOrdenados);
+            }
+        }
+        
+        terminar();
+        return dadosOrdenados;
     }
 
 }
