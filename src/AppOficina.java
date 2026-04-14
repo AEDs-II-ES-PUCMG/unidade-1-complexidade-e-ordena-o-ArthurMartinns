@@ -36,7 +36,7 @@ public class AppOficina {
     static final int MAX_PEDIDOS = 100;
     static Produto[] produtos;
     static int quantProdutos = 0;
-    static String nomeArquivoDados = "produtos.txt";
+    static String nomeArquivoDados = "C:\\Users\\1581559\\Desktop\\unidade-1-complexidade-e-ordena-o-ArthurMartinns\\src\\produtos.txt";
     static IOrdenador<Produto> ordenador;
 
     // #region utilidades
@@ -166,7 +166,29 @@ public class AppOficina {
         cabecalho();
         
         int opcao = exibirMenuOrdenadores();
-        //Complete com a sua lógica
+        
+        switch (opcao) {
+            case 1 -> ordenador = new Bubblesort<>();                          
+            case 2 -> ordenador = new InsertSort<>();                          
+            case 3 -> ordenador = new SelectionSort<>();                          
+            case 4 -> ordenador = new Mergesort<>();                          
+        }
+
+        if(ordenador != null) {
+            opcao = exibirMenuComparadores();
+
+            ComparadorPorCodigo comparador_codigo = new ComparadorPorCodigo();
+            ComparadorPorDesc comparador_desc = new ComparadorPorDesc();
+
+            switch (opcao) {
+                default -> produtos = ordenador.ordenar(produtos, comparador_desc);
+
+                case 1 -> produtos = ordenador.ordenar(produtos, comparador_codigo);
+            }
+
+            System.out.println("Tempo gasto: " + ordenador.getTempoOrdenacao()+ " ms.");
+        }
+
         ordenador = null;
     }
 
