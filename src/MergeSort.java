@@ -1,89 +1,91 @@
-public class MergeSort<T extends Comparable<T>> implements IOrdenador<T> {
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
 
-    private long comparacoes;
-    private long movimentacoes;
-    private double tempoOrdenacao;
-
-    @Override
-    public T[] ordenar(T[] dados) {
-        comparacoes = 0;
-        movimentacoes = 0;
-
-        long inicio = System.nanoTime();
-
-        mergeSort(dados, 0, dados.length - 1);
-
-        long fim = System.nanoTime();
-        tempoOrdenacao = (fim - inicio) / 1_000_000.0;
-
-        return dados;
-    }
-
-    private void mergeSort(T[] array, int esq, int dir) {
-        if (esq < dir) {
-            int meio = (esq + dir) / 2;
-
-            mergeSort(array, esq, meio);
-            mergeSort(array, meio + 1, dir);
-
-            intercalar(array, esq, meio, dir);
+public class Mergesort<T extends Comparable<T>> implements IOrdenador<T>{
+    
+        private long comparacoes;
+        private long movimentacoes;
+        private LocalDateTime inicio;
+        private LocalDateTime termino;
+        private T[] dadosOrdenados;
+        private Comparator<T> comparador;
+        
+        public Mergesort() {
+            comparacoes = 0;
+            movimentacoes = 0;
         }
-    }
-
-    private void intercalar(T[] array, int esq, int meio, int dir) {
-
-        int n1 = meio - esq + 1;
-        int n2 = dir - meio;
-
-        Object[] a1 = new Object[n1];
-        Object[] a2 = new Object[n2];
-
-        for (int i = 0; i < n1; i++) {
-            a1[i] = array[esq + i];
-            movimentacoes++;
+         
+        @Override
+        public T[] ordenar(T[] dados) {    
+            return ordenar(dados, T::compareTo);
         }
 
-        for (int j = 0; j < n2; j++) {
-            a2[j] = array[meio + j + 1];
-            movimentacoes++;
+        @Override
+        public T[] ordenar(T[] dados, Comparator<T> comparador) {    
+            this.comparador = comparador;
+            int tamanho = dados.length;
+            dadosOrdenados = Arrays.copyOf(dados, tamanho);
+            inicio = LocalDateTime.now();
+            mergesort(0, tamanho-1);
+            termino = LocalDateTime.now();
+            return dadosOrdenados;
         }
-
-        int i = 0, j = 0, k = esq;
-
-        while (i < n1 && j < n2) {
-            comparacoes++;
-
-            if (((T) a1[i]).compareTo((T) a2[j]) <= 0) {
-                array[k++] = (T) a1[i++];
-            } else {
-                array[k++] = (T) a2[j++];
+    
+        private T[] mergesort(int ini, int fim){
+            if(ini < fim){
+                int meio = (fim+ini)/2;
+                mergesort(ini, meio );
+                mergesort(meio+1, fim);
+                dadosOrdenados = merge(ini, fim, dadosOrdenados); 
             }
-            movimentacoes++;
+            return dadosOrdenados;
         }
 
-        while (i < n1) {
-            array[k++] = (T) a1[i++];
-            movimentacoes++;
+        private T[] merge(int inicio, int fim, T[] dados){
+            T[] novo = Arrays.copyOf(dados, dados.length);
+            int meio = (inicio+fim)/2;
+            int indice1 = inicio;
+            int indice2 = meio+1;
+            int pos = inicio;
+            while(indice1 <= meio && indice2 <= fim){
+                comparacoes++;
+                
+                if(this.comparador.compare(dados[indice1],dados[indice2]) <=0)
+                    novo[pos] = dados[indice1++];
+                else
+                    novo[pos] = dados[indice2++];
+                
+                pos++;
+                movimentacoes++;
+            }
+            int origem = indice1;
+            int destino = meio;
+           
+            if(indice1 > meio){
+                origem = indice2;
+                destino = fim;
+            }
+           
+            for(int i = origem; i<=destino; i++){
+                novo[pos++] = dados[i];
+                movimentacoes++;
+            }
+            return novo;
+        }        
+ 
+        public long getComparacoes() {
+            return comparacoes;
+        }
+        
+        public long getMovimentacoes() {
+            return movimentacoes;
+        }
+        
+        public double getTempoOrdenacao() {
+            return 0;
         }
 
-        while (j < n2) {
-            array[k++] = (T) a2[j++];
-            movimentacoes++;
-        }
-    }
-
-    @Override
-    public long getComparacoes() {
-        return comparacoes;
-    }
-
-    @Override
-    public long getMovimentacoes() {
-        return movimentacoes;
-    }
-
-    @Override
-    public double getTempoOrdenacao() {
-        return tempoOrdenacao;
-    }
 }
+
