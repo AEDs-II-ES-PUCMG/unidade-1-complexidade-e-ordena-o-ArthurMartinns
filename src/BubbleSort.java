@@ -23,6 +23,8 @@ public class Bubblesort<T extends Comparable<T>> implements IOrdenador<T>{
 
 	@Override
 	public T[] ordenar(T[] dados, Comparator<T> comparador) {
+		comparacoes = 0;
+		movimentacoes = 0;
 		T[] dadosOrdenados = Arrays.copyOf(dados, dados.length);
 		int tamanho = dadosOrdenados.length;
 		
@@ -62,6 +64,6 @@ public class Bubblesort<T extends Comparable<T>> implements IOrdenador<T>{
 	}
 	
 	public double getTempoOrdenacao() {
-	    return  0;
+	    return Duration.between(inicio, termino).toNanos() / 1_000_000.0;
 	}
 }

@@ -118,7 +118,7 @@ public abstract class Produto implements Comparable<Produto> {
      * @return Int de acordo com a regra padrão de Comparable (descrita acima)
      */
     public int compareTo(Produto outro){
-        return this.descricao.compareTo(outro.descricao);
+        return Integer.compare(this.hashCode(), outro.hashCode());
     }
 
     /**

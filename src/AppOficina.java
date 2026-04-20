@@ -35,8 +35,10 @@ public class AppOficina {
 
     static final int MAX_PEDIDOS = 100;
     static Produto[] produtos;
+    static Produto[] produtosOrdenadosPorCodigo;
+    static Produto[] produtosOrdenadosPorDescricao;
     static int quantProdutos = 0;
-    static String nomeArquivoDados = "C:\\Users\\1581559\\Desktop\\unidade-1-complexidade-e-ordena-o-ArthurMartinns\\src\\produtos.txt";
+    static String nomeArquivoDados = "src/produtos.txt";
     static IOrdenador<Produto> ordenador;
 
     // #region utilidades
@@ -97,9 +99,17 @@ public class AppOficina {
 
     static int exibirMenuComparadores() {
         cabecalho();
-        System.out.println("1 - Padrão");
-        System.out.println("2 - Por código");
+        System.out.println("1 - Por identificador");
+        System.out.println("2 - Por descrição");
         
+        return lerNumero("Digite sua opção", Integer.class);
+    }
+
+    static int exibirMenuBusca() {
+        cabecalho();
+        System.out.println("1 - Buscar por identificador");
+        System.out.println("2 - Buscar por descrição");
+
         return lerNumero("Digite sua opção", Integer.class);
     }
 
@@ -126,16 +136,57 @@ public class AppOficina {
     }
 
 
-    static Produto localizarProduto() {
-        cabecalho();
-        System.out.println("Localizando um produto");
-        int numero = lerNumero("Digite o identificador do produto", Integer.class);
-        Produto localizado = null;
-        
-        for (int i = 0; i < quantProdutos && localizado == null; i++) {
-            if (produtos[i].hashCode() == numero)
-                localizado = produtos[i];
+    static Produto buscaBinariaPorCodigo(int codigo) {
+        int inicio = 0;
+        int fim = quantProdutos - 1;
+        while (inicio <= fim) {
+            int meio = (inicio + fim) / 2;
+            Produto atual = produtosOrdenadosPorCodigo[meio];
+            if (atual.hashCode() == codigo) {
+                return atual;
+            }
+
+            if (atual.hashCode() < codigo) {
+                inicio = meio + 1;
+            } else {
+                fim = meio - 1;
+            }
         }
+        return null;
+    }
+
+    static Produto buscaBinariaPorDescricao(String descricao) {
+        int inicio = 0;
+        int fim = quantProdutos - 1;
+        while (inicio <= fim) {
+            int meio = (inicio + fim) / 2;
+            Produto atual = produtosOrdenadosPorDescricao[meio];
+            int comparacao = atual.descricao.compareTo(descricao);
+            if (comparacao == 0) {
+                return atual;
+            }
+
+            if (comparacao < 0) {
+                inicio = meio + 1;
+            } else {
+                fim = meio - 1;
+            }
+        }
+        return null;
+    }
+
+    static Produto localizarProduto() {
+        int criterio = exibirMenuBusca();
+        Produto localizado = null;
+        if (criterio == 1) {
+            int numero = lerNumero("Digite o identificador do produto", Integer.class);
+            localizado = buscaBinariaPorCodigo(numero);
+        } else if (criterio == 2) {
+            System.out.print("Digite a descrição do produto: ");
+            String descricao = teclado.nextLine();
+            localizado = buscaBinariaPorDescricao(descricao);
+        }
+
         return localizado;
     }
 
@@ -181,9 +232,9 @@ public class AppOficina {
             ComparadorPorDesc comparador_desc = new ComparadorPorDesc();
 
             switch (opcao) {
-                default -> produtos = ordenador.ordenar(produtos, comparador_desc);
-
                 case 1 -> produtos = ordenador.ordenar(produtos, comparador_codigo);
+                case 2 -> produtos = ordenador.ordenar(produtos, comparador_desc);
+                default -> produtos = ordenador.ordenar(produtos);
             }
 
             System.out.println("Tempo gasto: " + ordenador.getTempoOrdenacao()+ " ms.");
@@ -215,6 +266,13 @@ public class AppOficina {
         teclado = new Scanner(System.in);
         
         produtos = carregarProdutos(nomeArquivoDados);
+        if (produtos == null) {
+            teclado.close();
+            return;
+        }
+        IOrdenador<Produto> ordenadorInicial = new Mergesort<>();
+        produtosOrdenadosPorCodigo = ordenadorInicial.ordenar(produtos, new ComparadorPorCodigo());
+        produtosOrdenadosPorDescricao = ordenadorInicial.ordenar(produtos, new ComparadorPorDesc());
         embaralharProdutos();
 
         int opcao = -1;
